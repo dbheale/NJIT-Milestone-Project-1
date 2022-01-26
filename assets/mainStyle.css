@@ -1,0 +1,17 @@
+ .game-board-cell{
+    height: 5em;
+    width: 5em;
+    padding: 1em;
+}
+.flip-card-front-hide{
+    display: none;
+}
+.flip-card-front-show{
+    display: inline;
+}
+.flip-card-back-hide{
+    display: none;
+}
+.flip-card-back-show{
+    display: inline;
+}
