@@ -1,7 +1,28 @@
+/* * { 
+    border: 1px solid teal;
+} */
  .game-board-cell{
     height: 5em;
     width: 5em;
     padding: 1em;
+}
+.game-board-hide{
+    display: none;
+}
+.game-board-show{
+    display: inline;
+}
+.start-button-hide{
+    display: none;
+}
+.start-button-show{
+    display: inline;
+}
+.start-time-hide{
+    display: none;
+}
+.start-time-show{
+    display: inline;
 }
 .flip-card-front-hide{
     display: none;
@@ -13,5 +34,45 @@
     display: none;
 }
 .flip-card-back-show{
-    display: inline;
+    display: inline;    
 }
+body{
+    background-color: lightblue;
+}
+
+img {
+    width: auto;
+    height: auto;
+  }
+ 
+section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    width:600px;  
+}
+/* .container
+{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;    
+} */
+
+aside {
+    min-width: 20%;
+    display:flex;
+    align-items: left;
+    justify-content: left;
+    float:left; 
+}
+.interface
+{
+    padding: 1em;
+}
+/* #game-board-main
+{
+    background-color: green; 
+    width:50%;
+} */
+  
+  

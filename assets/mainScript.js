@@ -1,6 +1,8 @@
 const cellIdprefix = 'game-board-cell-';
 const rowIndexArray = ['A','B','C','D','E','F'];
 const cellIndexArray = [1,2,3,4,5];
+let lock = true;
+let playerInitialsStored = '***';
 
 // let gameBoard = document.getElementById('game-board');
 
@@ -73,25 +75,91 @@ for(let cellIndex = 0;cellIndex < cellIndexArray.length;cellIndex++)
         let gameBoardCellSpan = document.getElementById(spanImagesIdArray[gameBoardImageIndex]);
         gameBoardImageIndex++;
         gameBoardCellSpan.addEventListener('click', function() {
-            let target = document.getElementById(this.id);
-            
-            let frontHide = 'flip-card-front-hide';
-            let frontShow = 'flip-card-front-show';
-            let backHide = 'flip-card-back-hide';
-            let backShow = 'flip-card-back-show';
-            let isFrontShow = target.innerHTML.indexOf(frontShow) > 0;
-            let isBackShow = target.innerHTML.indexOf(backShow) > 0;
-            if(isFrontShow)
-            {
-                target.innerHTML = target.innerHTML.replace(frontShow,frontHide);
-                target.innerHTML = target.innerHTML.replace(backHide,backShow);                      
+            if (lock) {
+                alert("Start the game silly :)");
             }
-            
-            if(isBackShow)
+            else
             {
-                target.innerHTML = target.innerHTML.replace(frontHide,frontShow); 
-                target.innerHTML = target.innerHTML.replace(backShow,backHide);                       
-            }    
+                let target = document.getElementById(this.id);            
+                flipCard(target);
+                let attemptCounter = document.getElementById('attempt-counter');
+                addToCounter(attemptCounter);
+            }             
         })       
     }
+}
+
+let startButton = document.getElementById('start-button');
+startButton.addEventListener('click',function(){   
+    let statusBanner = document.getElementById('status=banner'); 
+    statusBanner.value = "";  
+    let playerInitials = document.getElementById('player-initials');
+    if (playerInitials.value == undefined || playerInitials.value.length < 1)
+    {
+        let statusBanner = document.getElementById('status=banner'); 
+        statusBanner.value = "Please enter your initials...";        
+        return;
+    }
+    playerInitialsStored =  playerInitials.value;
+    playerInitials.setAttribute("readonly",true);
+    lock = false;
+    let startButtonDiv = document.getElementById('start-button-div');        
+    startButtonDiv.className = startButtonDiv.className.replace('start-button-show','start-button-hide');
+    let startTime = document.getElementById('start-time');
+    startTime.value = getTime();
+    let startTimeDiv = document.getElementById('start-time-div');        
+    startTimeDiv.className = startTimeDiv.className.replace('start-time-hide','start-time-show');
+    let gameBoard = document.getElementById('game-board');        
+    gameBoard.className = gameBoard.className.replace('game-board-hide','game-board-show');
+    
+})
+
+function getTime()
+{
+    let today = new Date();  
+    let hour = parseInt(today.getHours());
+    let minute = parseInt(today.getMinutes());
+    let second = parseInt(today.getSeconds());
+    let hourText = padZero(hour);
+    let minuteText = padZero(minute);
+    let secondText = padZero(second);
+    let time = `${hourText}:${minuteText}:${secondText}`
+    return time;
+}
+function padZero(value)
+{
+    if(parseInt(value) > 9)
+    {
+        return value;
+    }
+    else
+    {
+        return `0${value}`
+    }    
+}
+function flipCard(card)
+{         
+    let frontHide = 'flip-card-front-hide';
+    let frontShow = 'flip-card-front-show';
+    let backHide = 'flip-card-back-hide';
+    let backShow = 'flip-card-back-show';
+    let isFrontShow = card.innerHTML.indexOf(frontShow) > 0;
+    let isBackShow = card.innerHTML.indexOf(backShow) > 0;
+    if(isFrontShow)
+    {
+        card.innerHTML = card.innerHTML.replace(frontShow,frontHide);
+        card.innerHTML = card.innerHTML.replace(backHide,backShow);                      
+    }
+    
+    if(isBackShow)
+    {
+        card.innerHTML = card.innerHTML.replace(frontHide,frontShow); 
+        card.innerHTML = card.innerHTML.replace(backShow,backHide);                       
+    }    
+}
+
+function addToCounter(counter)
+{
+    let value = parseInt(counter.value)
+    counter.value = value + 1;
 }
