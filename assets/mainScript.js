@@ -2,6 +2,7 @@ const cellIdprefix = 'game-board-cell-';
 const rowIndexArray = ['A','B','C','D','E','F'];
 const cellIndexArray = [1,2,3,4,5];
 const shapeImageRootFilePath = "./assets/images/matchingImages/shapes/";
+const enhancedLogging = false;
 const shapesFileNameArray = [
     'BasicTrangle.png'
     ,'Bolt.png'
@@ -21,7 +22,7 @@ const shapesFileNameArray = [
 ];
 let playerInitialsStored = '***';
 
-// let gameBoard = document.getElementById('game-board');
+
 
 function addActionsToCards()
 {
@@ -51,9 +52,6 @@ function addActionsToCards()
     })
 }
 
-
-
-
 function getTime()
 {
     let today = new Date();  
@@ -77,14 +75,32 @@ function padZero(value)
         return `0${value}`
     }    
 }
+
+function clickOnCard(card)
+{
+    let stateArray = getGamePlayState();
+    // let cardState = [][];
+    for(let stateIndex = 0; stateIndex < stateArray.length; stateIndex++)
+    {
+        let statePart = stateArray[stateIndex];
+        console.log(statePart)
+    }
+
+    flipCard(card);
+    // let attemptCounter = document.getElementById('attempt-counter');
+    // addToCounter(attemptCounter);
+}
+
 function flipCard(card)
-{         
+{ 
     let frontHide = 'flip-card-front-hide';
     let frontShow = 'flip-card-front-show';
     let backHide = 'flip-card-back-hide';
     let backShow = 'flip-card-back-show';
+
     let isFrontShow = card.innerHTML.indexOf(frontShow) > 0;
     let isBackShow = card.innerHTML.indexOf(backShow) > 0;
+    
     if(isFrontShow)
     {
         card.innerHTML = card.innerHTML.replace(frontShow,frontHide);
@@ -95,11 +111,66 @@ function flipCard(card)
     {
         card.innerHTML = card.innerHTML.replace(frontHide,frontShow); 
         card.innerHTML = card.innerHTML.replace(backShow,backHide);                       
-    }
-    
-    let attemptCounter = document.getElementById('attempt-counter');
-    addToCounter(attemptCounter);
+    }   
 }
+
+function getGamePlayState()
+{
+    let log = [];
+    let cardInfo = [];
+    let gameBoard = document.getElementById('game-board');
+    log.push(`Game Board Nodes Count: ${gameBoard.childNodes.length}`);
+    
+    for(let gameBoardIndex = 0; gameBoardIndex < gameBoard.childNodes.length;gameBoardIndex++)
+    {
+        let gameBoardChildNodes = gameBoard.childNodes[gameBoardIndex];
+        log.push(`Game Board Region ${gameBoardIndex} Nodes Count: ${gameBoardChildNodes.childNodes.length}`);
+        log.push(gameBoardChildNodes)
+        for(let gameBoardRegionindex = 0; gameBoardRegionindex < gameBoardChildNodes.childNodes.length;gameBoardRegionindex++)
+        {
+            let gameBoardRegionNodes = gameBoardChildNodes.childNodes[gameBoardRegionindex];
+            log.push(`Region Area ${gameBoardRegionindex} Nodes Count: ${gameBoardRegionNodes.childNodes.length}`);
+            log.push(gameBoardRegionNodes)
+            for(let gameBoardAreaindex = 0; gameBoardAreaindex < gameBoardRegionNodes.childNodes.length;gameBoardAreaindex++)
+            {
+                let gameBoardAreaNodes = gameBoardRegionNodes.childNodes[gameBoardAreaindex];
+                log.push(`Area Block ${gameBoardAreaindex} Nodes Count: ${gameBoardAreaNodes.childNodes.length}`);
+                log.push(gameBoardAreaNodes)
+                for(let gameBoardBlockindex = 0; gameBoardBlockindex < gameBoardAreaNodes.childNodes.length;gameBoardBlockindex++)
+                {
+                    let gameBoardBlockNodes = gameBoardAreaNodes.childNodes[gameBoardBlockindex];
+                    log.push(`Block Card ${gameBoardBlockindex} Nodes Count: ${gameBoardBlockNodes.childNodes.length}`);
+                    log.push(gameBoardBlockNodes)
+                    for(let gameBoardCardindex = 0; gameBoardCardindex < gameBoardBlockNodes.childNodes.length;gameBoardCardindex++)
+                    {
+                        let gameBoardCardNodes = gameBoardBlockNodes.childNodes[gameBoardCardindex];
+                        log.push(`Card Info ${gameBoardCardindex} Nodes Count: ${gameBoardCardNodes.childNodes.length}`);
+                        log.push(gameBoardCardNodes)
+                        cardInfo.push(gameBoardCardNodes);
+                    }
+                }
+            }
+        }
+    }
+
+    displayLog(log);
+    return cardInfo;
+}
+
+function displayLog(log)
+{
+    console.log(`Enhanced Logging Flag: ${enhancedLogging}`);
+    if(enhancedLogging)
+    {
+        for(let logIndex = 0; logIndex < log.length; logIndex++)
+        {
+            let logText = log[logIndex];
+            console.log(logText);
+        }
+    }    
+}
+
+
 
 function addToCounter(counter)
 {
@@ -112,26 +183,26 @@ function main()
     let shapeImageTagArray = [];
     let spanImagesIdArray = [];
     
-    for(let i = 0; i < 2;i++)
+    for(let i = 0; i < 2; i++)
     {
         let fileNameExtension = i + 1;
         for (let imageIndex = 0;imageIndex < shapesFileNameArray.length;imageIndex++)
         {
-            console.log(`Shapes File Name: ${shapesFileNameArray[imageIndex]}`);
+            // console.log(`Shapes File Name: ${shapesFileNameArray[imageIndex]}`);
     
             // Card Front Image Tag
             let cardFrontImageName = `${shapesFileNameArray[imageIndex].replace(".png","")}`;
             let cardFrontImageId = `${cardFrontImageName}-${fileNameExtension}`;
             let cardFrontImageFilePath = `${shapeImageRootFilePath}${shapesFileNameArray[imageIndex]}`;
             let cardFrontImageTag = `<img id="${cardFrontImageId}" src="${cardFrontImageFilePath}" alt="${cardFrontImageName}" class="flip-card-front-hide"/>`
-            console.log(`Card Front Image Name: ${cardFrontImageName}`);
+            // console.log(`Card Front Image Name: ${cardFrontImageName}`);
             
             // Card Back Image Tag
             let cardBackImageName = `${shapesFileNameArray[imageIndex].replace(".png","-CardBack")}`;
             let cardBackImageId = `${cardBackImageName}-${fileNameExtension}`;
             let cardBackImageFilePath = `${shapeImageRootFilePath}CardBack.png`;
             let cardBackImageTag = `<img id="${cardBackImageId}" src="${cardBackImageFilePath}" alt="${cardBackImageName}" class="flip-card-back-show"/>`;
-            console.log(`Card Back Image Name: ${cardBackImageName}`);
+            // console.log(`Card Back Image Name: ${cardBackImageName}`);
     
             //Input Hidden Tag        
             let cardinputHiddenId = `${cardFrontImageName}-Input-${fileNameExtension}`;
@@ -140,13 +211,12 @@ function main()
             // Card Span Tag
             let cardSpanId = `${cardFrontImageName}-Span-${fileNameExtension}`;
             let cardSpanTag = `<span id="${cardSpanId}">${cardFrontImageTag}${cardBackImageTag}${cardinputHiddenTag}</span>`
-            console.log(`Card Span ID: ${cardSpanId}`);
+            // console.log(`Card Span ID: ${cardSpanId}`);
                
     
             shapeImageTagArray.push(cardSpanTag);
             spanImagesIdArray.push(cardSpanId);
-        }
-        console.log(`i=${i}`);
+        }       
     }    
     
     let gameBoardImageIndex = 0;
@@ -164,7 +234,7 @@ function main()
             gameBoardCellSpan.addEventListener('click', function() {
                 
                 let target = document.getElementById(this.id);                          
-                flipCard(target);                            
+                clickOnCard(target);                            
             })       
         }
     }
