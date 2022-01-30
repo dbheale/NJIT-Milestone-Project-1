@@ -2,7 +2,7 @@ const cellIdprefix = 'game-board-cell-';
 const rowIndexArray = ['A','B','C','D','E','F'];
 const cellIndexArray = [1,2,3,4,5];
 const shapeImageRootFilePath = "./assets/images/matchingImages/shapes/";
-const enhancedLogging = false;
+const enhancedLogging = true;
 const shapesFileNameArray = [
     'BasicTrangle.png'
     ,'Bolt.png'
@@ -78,13 +78,83 @@ function padZero(value)
 
 function clickOnCard(card)
 {
+    let log = [];
     let stateArray = getGamePlayState();
-    // let cardState = [][];
-    for(let stateIndex = 0; stateIndex < stateArray.length; stateIndex++)
-    {
-        let statePart = stateArray[stateIndex];
-        console.log(statePart)
+    let cardMatchArray = []
+    for (let imageIndex = 0;imageIndex < shapesFileNameArray.length;imageIndex++)
+    {        
+        cardMatchArray.push({
+            Name: shapesFileNameArray[imageIndex].replace('.png','')
+            ,Status: "PENDING"            
+        });
     }
+    
+    for (let cardMatchIndex = 0;cardMatchIndex < cardMatchArray.length;cardMatchIndex++)
+    {        
+        for(let stateIndex = 0; stateIndex < stateArray.length; stateIndex++)
+        {
+            let cardMatch = cardMatchArray[cardMatchIndex];
+            let cardMatchName = '';
+            if(cardMatch.Name != undefined)
+            {
+                cardMatchName = cardMatch.Name;
+            }
+            
+            let stateNode = stateArray[stateIndex];
+            let stateNodeId = '';
+            if(stateNode.getAttribute('Id') != undefined)
+            {
+                stateNodeId = stateNode.getAttribute('Id');
+            }
+
+            let stateNodeName = '';
+            let stateNodeCardPairNumber = '';
+            if(stateNodeId.length > 0)
+            {
+                let stateNodeNameSplit = stateNodeId.split('-');
+                for(let splitIndex = 0;splitIndex < stateNodeNameSplit.length;splitIndex++)
+                {
+                    if(splitIndex === 0)
+                    {
+                        stateNodeName = stateNodeNameSplit[splitIndex]
+                    }
+                    else (splitIndex === stateNodeNameSplit.length - 1)
+                    {
+                        stateNodeCardPairNumber = stateNodeNameSplit[stateNodeNameSplit.length - 1]
+                    }
+                }       
+            }
+
+            if(stateNodeName === cardMatchName)
+            {
+                log.push(`*** match is found ***`)
+                log.push(`Card Match Name: ${cardMatchName}`)
+                log.push(`State Node Name: ${stateNodeName}`)
+                log.push(`State Node Card Pair Number: ${stateNodeCardPairNumber}`)
+                let stateNodeImageClass = '';
+                let stateNodeInputValue = '';
+                if(stateNode.nodeName === 'IMG')
+                {
+                    log.push("IS IMAGE TAG!");
+                    stateNodeImageClass = stateNode.getAttribute("class");
+                    log.push(stateNodeImageClass);
+                }
+                else if(stateNode.nodeName === "INPUT") {
+                    log.push("IS INPUT TAG!");
+                    stateNodeInputValue = stateNode.getAttribute("value");
+                    log.push(stateNodeInputValue);
+                }
+                if(stateNodeInputValue === "IN_PLAY")
+                {
+                    log.push(cardMatch);
+
+                }                
+            }
+        }
+
+        displayLog(log);
+    }
+    
 
     flipCard(card);
     // let attemptCounter = document.getElementById('attempt-counter');
@@ -206,7 +276,7 @@ function main()
     
             //Input Hidden Tag        
             let cardinputHiddenId = `${cardFrontImageName}-Input-${fileNameExtension}`;
-            let cardinputHiddenTag = `<input id="${cardinputHiddenId}" type="hidden" value="${cardFrontImageName}"/>`
+            let cardinputHiddenTag = `<input id="${cardinputHiddenId}" type="hidden" value="IN_PLAY"/>`
     
             // Card Span Tag
             let cardSpanId = `${cardFrontImageName}-Span-${fileNameExtension}`;
