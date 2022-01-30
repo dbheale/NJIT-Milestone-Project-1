@@ -1,39 +1,41 @@
 /* * { 
     border: 1px solid teal;
 } */
- .game-board-cell{
+ .game-board-cell {
     height: 5em;
     width: 5em;
     padding: 1em;
 }
-.game-board-hide{
+
+/* SHOW <--> HIDE TOGGLES */
+.game-board-hide {
     display: none;
 }
-.game-board-show{
+.game-board-show {
     display: inline;
 }
-.start-button-hide{
+.start-button-hide {
     display: none;
 }
-.start-button-show{
+.start-button-show {
     display: inline;
 }
-.start-time-hide{
+.start-time-hide {
     display: none;
 }
-.start-time-show{
+.start-time-show {
     display: inline;
 }
-.flip-card-front-hide{
+.flip-card-front-hide {
     display: none;
 }
-.flip-card-front-show{
+.flip-card-front-show {
     display: inline;
 }
-.flip-card-back-hide{
+.flip-card-back-hide {
     display: none;
 }
-.flip-card-back-show{
+.flip-card-back-show {
     display: inline;    
 }
 body{
@@ -43,36 +45,20 @@ body{
 img {
     width: auto;
     height: auto;
-  }
- 
-section {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    width:600px;  
 }
-/* .container
-{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;    
-} */
 
-aside {
-    min-width: 20%;
+aside {    
     display:flex;
     align-items: left;
     justify-content: left;
-    float:left; 
+    float:left;
+    min-width: 20%;
+    max-width: 30%;
 }
-.interface
-{
+
+.interface {
     padding: 1em;
 }
-/* #game-board-main
-{
-    background-color: green; 
-    width:50%;
-} */
+
   
   

@@ -1,12 +1,8 @@
 const cellIdprefix = 'game-board-cell-';
 const rowIndexArray = ['A','B','C','D','E','F'];
 const cellIndexArray = [1,2,3,4,5];
-let lock = true;
-let playerInitialsStored = '***';
-
-// let gameBoard = document.getElementById('game-board');
-
-let shapesFileNameArray = [
+const shapeImageRootFilePath = "./assets/images/matchingImages/shapes/";
+const shapesFileNameArray = [
     'BasicTrangle.png'
     ,'Bolt.png'
     ,'Circle.png'
@@ -22,97 +18,41 @@ let shapesFileNameArray = [
     ,'Star.png'
     ,'Unknown.png'
     ,'UpArrow.png'
-]
+];
+let playerInitialsStored = '***';
 
-let shapeImageTagArray = [];
-let shapeImageRootFilePath = "./assets/images/matchingImages/shapes/";
-let spanImagesIdArray = [];
-for(let imageIndex = 0;imageIndex < shapesFileNameArray.length;imageIndex++)
+// let gameBoard = document.getElementById('game-board');
+
+function addActionsToCards()
 {
-    let imageName = `${shapesFileNameArray[imageIndex].replace(".png","")}`;
-    let imageId = `${imageName}${'-1'}`;
-    let imageFilePath = `${shapeImageRootFilePath}${shapesFileNameArray[imageIndex]}`;
-    let imageTag = `<img id="${imageId}" src="${imageFilePath}" alt="${imageName}" class="flip-card-front-hide">`
-    // console.log(imageTag);
-    let cardbackImageName = `${shapesFileNameArray[imageIndex].replace(".png","-CardBack")}`;
-    let cardbackImageId = `${cardbackImageName}${'-1'}`;
-    let cardbackImageFilePath = `${shapeImageRootFilePath}CardBack.png`;
-    let cardbackImageTag = `<img id="${cardbackImageId}" src="${cardbackImageFilePath}" alt="${cardbackImageName}" class="flip-card-back-show">`;
-    let spanId = `${imageName}${'-Span-1'}`;
-    let spanImageTags = `<span id="${spanId}">${imageTag}${cardbackImageTag}<span>`    
-    shapeImageTagArray.push(spanImageTags);
-    spanImagesIdArray.push(spanId);
-}
-for(let imageIndex = 0;imageIndex < shapesFileNameArray.length;imageIndex++)
-{
-    let imageName = `${shapesFileNameArray[imageIndex].replace(".png","")}`;
-    let imageId = `${imageName}${'-2'}`;
-    let imageFilePath = `${shapeImageRootFilePath}${shapesFileNameArray[imageIndex]}`;
-    let imageTag = `<img id="${imageId}" src="${imageFilePath}" alt="${imageName}" class="flip-card-front-hide">`
-    // console.log(imageTag);
-    let cardbackImageName = `${shapesFileNameArray[imageIndex].replace(".png","-CardBack")}`;
-    let cardbackImageId = `${cardbackImageName}${'-2'}`;
-    let cardbackImageFilePath = `${shapeImageRootFilePath}CardBack.png`;
-    let cardbackImageTag = `<img id="${cardbackImageId}" src="${cardbackImageFilePath}" alt="${cardbackImageName}" class="flip-card-back-show">`;
-    let spanId = `${imageName}${'-Span-2'}`;
-    let spanImageTags = `<span id="${spanId}">${imageTag}${cardbackImageTag}<span>`
-    shapeImageTagArray.push(spanImageTags);
-    spanImagesIdArray.push(spanId);
-}
-
-// console.log(imageTagArray.length);
-
-let gameBoardImageIndex = 0;
-for(let cellIndex = 0;cellIndex < cellIndexArray.length;cellIndex++)
-{
-    for(let rowIndex = 0;rowIndex < rowIndexArray.length;rowIndex++)
-    {
-        let gameBoardCellId = `${cellIdprefix}${rowIndexArray[rowIndex]}${cellIndexArray[cellIndex]}`;
-        // console.log(gameBoardCellId);       
-        let gameBoardCell = document.getElementById(gameBoardCellId);
-        // console.log(gameBoardCell);
-        gameBoardCell.innerHTML = shapeImageTagArray[gameBoardImageIndex];
-        let gameBoardCellSpan = document.getElementById(spanImagesIdArray[gameBoardImageIndex]);
-        gameBoardImageIndex++;
-        gameBoardCellSpan.addEventListener('click', function() {
-            if (lock) {
-                alert("Start the game silly :)");
-            }
-            else
-            {
-                let target = document.getElementById(this.id);            
-                flipCard(target);
-                let attemptCounter = document.getElementById('attempt-counter');
-                addToCounter(attemptCounter);
-            }             
-        })       
-    }
-}
-
-let startButton = document.getElementById('start-button');
-startButton.addEventListener('click',function(){   
-    let statusBanner = document.getElementById('status=banner'); 
-    statusBanner.value = "";  
-    let playerInitials = document.getElementById('player-initials');
-    if (playerInitials.value == undefined || playerInitials.value.length < 1)
-    {
+    let startButton = document.getElementById('start-button');
+    startButton.addEventListener('click',function(){   
         let statusBanner = document.getElementById('status=banner'); 
-        statusBanner.value = "Please enter your initials...";        
-        return;
-    }
-    playerInitialsStored =  playerInitials.value;
-    playerInitials.setAttribute("readonly",true);
-    lock = false;
-    let startButtonDiv = document.getElementById('start-button-div');        
-    startButtonDiv.className = startButtonDiv.className.replace('start-button-show','start-button-hide');
-    let startTime = document.getElementById('start-time');
-    startTime.value = getTime();
-    let startTimeDiv = document.getElementById('start-time-div');        
-    startTimeDiv.className = startTimeDiv.className.replace('start-time-hide','start-time-show');
-    let gameBoard = document.getElementById('game-board');        
-    gameBoard.className = gameBoard.className.replace('game-board-hide','game-board-show');
-    
-})
+        statusBanner.value = "";  
+        let playerInitials = document.getElementById('player-initials');
+        if (playerInitials.value == undefined || playerInitials.value.length < 1)
+        {
+            let statusBanner = document.getElementById('status=banner'); 
+            statusBanner.value = "Please enter your initials...";        
+            return;
+        }
+        playerInitialsStored =  playerInitials.value;
+        playerInitials.setAttribute("readonly",true);
+        lock = false;
+        let startButtonDiv = document.getElementById('start-button-div');        
+        startButtonDiv.className = startButtonDiv.className.replace('start-button-show','start-button-hide');
+        let startTime = document.getElementById('start-time');
+        startTime.value = getTime();
+        let startTimeDiv = document.getElementById('start-time-div');        
+        startTimeDiv.className = startTimeDiv.className.replace('start-time-hide','start-time-show');
+        let gameBoard = document.getElementById('game-board');        
+        gameBoard.className = gameBoard.className.replace('game-board-hide','game-board-show');
+        
+    })
+}
+
+
+
 
 function getTime()
 {
@@ -155,7 +95,10 @@ function flipCard(card)
     {
         card.innerHTML = card.innerHTML.replace(frontHide,frontShow); 
         card.innerHTML = card.innerHTML.replace(backShow,backHide);                       
-    }    
+    }
+    
+    let attemptCounter = document.getElementById('attempt-counter');
+    addToCounter(attemptCounter);
 }
 
 function addToCounter(counter)
@@ -163,3 +106,70 @@ function addToCounter(counter)
     let value = parseInt(counter.value)
     counter.value = value + 1;
 }
+
+function main()
+{
+    let shapeImageTagArray = [];
+    let spanImagesIdArray = [];
+    
+    for(let i = 0; i < 2;i++)
+    {
+        let fileNameExtension = i + 1;
+        for (let imageIndex = 0;imageIndex < shapesFileNameArray.length;imageIndex++)
+        {
+            console.log(`Shapes File Name: ${shapesFileNameArray[imageIndex]}`);
+    
+            // Card Front Image Tag
+            let cardFrontImageName = `${shapesFileNameArray[imageIndex].replace(".png","")}`;
+            let cardFrontImageId = `${cardFrontImageName}-${fileNameExtension}`;
+            let cardFrontImageFilePath = `${shapeImageRootFilePath}${shapesFileNameArray[imageIndex]}`;
+            let cardFrontImageTag = `<img id="${cardFrontImageId}" src="${cardFrontImageFilePath}" alt="${cardFrontImageName}" class="flip-card-front-hide"/>`
+            console.log(`Card Front Image Name: ${cardFrontImageName}`);
+            
+            // Card Back Image Tag
+            let cardBackImageName = `${shapesFileNameArray[imageIndex].replace(".png","-CardBack")}`;
+            let cardBackImageId = `${cardBackImageName}-${fileNameExtension}`;
+            let cardBackImageFilePath = `${shapeImageRootFilePath}CardBack.png`;
+            let cardBackImageTag = `<img id="${cardBackImageId}" src="${cardBackImageFilePath}" alt="${cardBackImageName}" class="flip-card-back-show"/>`;
+            console.log(`Card Back Image Name: ${cardBackImageName}`);
+    
+            //Input Hidden Tag        
+            let cardinputHiddenId = `${cardFrontImageName}-Input-${fileNameExtension}`;
+            let cardinputHiddenTag = `<input id="${cardinputHiddenId}" type="hidden" value="${cardFrontImageName}"/>`
+    
+            // Card Span Tag
+            let cardSpanId = `${cardFrontImageName}-Span-${fileNameExtension}`;
+            let cardSpanTag = `<span id="${cardSpanId}">${cardFrontImageTag}${cardBackImageTag}${cardinputHiddenTag}</span>`
+            console.log(`Card Span ID: ${cardSpanId}`);
+               
+    
+            shapeImageTagArray.push(cardSpanTag);
+            spanImagesIdArray.push(cardSpanId);
+        }
+        console.log(`i=${i}`);
+    }    
+    
+    let gameBoardImageIndex = 0;
+    for(let cellIndex = 0;cellIndex < cellIndexArray.length;cellIndex++)
+    {
+        for(let rowIndex = 0;rowIndex < rowIndexArray.length;rowIndex++)
+        {
+            let gameBoardCellId = `${cellIdprefix}${rowIndexArray[rowIndex]}${cellIndexArray[cellIndex]}`;
+            // console.log(gameBoardCellId);       
+            let gameBoardCell = document.getElementById(gameBoardCellId);
+            // console.log(gameBoardCell);
+            gameBoardCell.innerHTML = shapeImageTagArray[gameBoardImageIndex];
+            let gameBoardCellSpan = document.getElementById(spanImagesIdArray[gameBoardImageIndex]);
+            gameBoardImageIndex++;
+            gameBoardCellSpan.addEventListener('click', function() {
+                
+                let target = document.getElementById(this.id);                          
+                flipCard(target);                            
+            })       
+        }
+    }
+
+    addActionsToCards();
+}
+
+main();
