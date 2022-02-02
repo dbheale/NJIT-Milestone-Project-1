@@ -2,7 +2,11 @@ const cellIdprefix = 'game-board-cell-';
 const rowIndexArray = ['A','B','C','D','E','F'];
 const cellIndexArray = [1,2,3,4,5];
 const shapeImageRootFilePath = "./assets/images/matchingImages/shapes/";
-const enhancedLogging = true;
+const enhancedLogging = false;
+const flipCardFrontHideClassName = 'flip-card-front-hide';
+const flipCardFrontShowClassName = 'flip-card-front-show';
+const flipCardBackHideClassName = 'flip-card-back-hide';
+const flipCardBackShowClassName = 'flip-card-back-show';
 const shapesFileNameArray = [
     'BasicTrangle.png'
     ,'Bolt.png'
@@ -21,7 +25,8 @@ const shapesFileNameArray = [
     ,'UpArrow.png'
 ];
 let playerInitialsStored = '***';
-
+let shapeImageTagArray = [];
+let spanImagesIdArray = [];
 
 
 function addActionsToCards()
@@ -76,8 +81,16 @@ function padZero(value)
     }    
 }
 
+function IsFrontShowing(cardImageClassValue)
+{    
+    return (cardImageClassValue === flipCardFrontShowClassName || cardImageClassValue === flipCardBackHideClassName)    
+}
+
 function clickOnCard(card)
 {
+
+    flipCard(card);
+
     let log = [];
     let stateArray = getGamePlayState();
     let cardMatchArray = []
@@ -85,7 +98,12 @@ function clickOnCard(card)
     {        
         cardMatchArray.push({
             Name: shapesFileNameArray[imageIndex].replace('.png','')
-            ,Status: "PENDING"            
+            ,Status: "PENDING"
+            ,StatefulTagId1: "TBD"
+            ,StatefulTagId2: "TBD"            
+            ,IsFrontShowing1: false            
+            ,IsFrontShowing2: false            
+            ,ErrorMessage: "EMPTY"                              
         });
     }
     
@@ -110,7 +128,7 @@ function clickOnCard(card)
             let stateNodeName = '';
             let stateNodeCardPairNumber = '';
             if(stateNodeId.length > 0)
-            {
+            {                
                 let stateNodeNameSplit = stateNodeId.split('-');
                 for(let splitIndex = 0;splitIndex < stateNodeNameSplit.length;splitIndex++)
                 {
@@ -138,49 +156,169 @@ function clickOnCard(card)
                     log.push("IS IMAGE TAG!");
                     stateNodeImageClass = stateNode.getAttribute("class");
                     log.push(stateNodeImageClass);
+                    switch(parseInt(stateNodeCardPairNumber))
+                    {
+                        case 1:
+                            {
+                                cardMatch.IsFrontShowing1 = IsFrontShowing(stateNodeImageClass);
+                                break;
+                            }
+                        case 2:
+                            {
+                                cardMatch.IsFrontShowing2 = IsFrontShowing(stateNodeImageClass);
+                                break;
+                            }
+                        default:
+                            {                                
+                                cardMatch.ErrorMessage = "Error with Unknown Pairing Number!";
+                                break;
+                            }
+                    }          
                 }
                 else if(stateNode.nodeName === "INPUT") {
                     log.push("IS INPUT TAG!");
                     stateNodeInputValue = stateNode.getAttribute("value");
                     log.push(stateNodeInputValue);
-                }
-                if(stateNodeInputValue === "IN_PLAY")
-                {
-                    log.push(cardMatch);
-
-                }                
+                    cardMatch.Status = stateNodeInputValue;
+                    
+                    switch(parseInt(stateNodeCardPairNumber))
+                    {
+                        case 1:
+                            {
+                                cardMatch.StatefulTagId1 = stateNodeId;                                
+                                break;
+                            }
+                        case 2:
+                            {
+                                cardMatch.StatefulTagId2 = stateNodeId;                                
+                                break;
+                            }
+                        default:
+                            {                                
+                                cardMatch.ErrorMessage = "Error with Unknown Pairing Number!";
+                                break;
+                            }
+                    }
+                }                               
             }
         }
 
         displayLog(log);
     }
-    
 
-    flipCard(card);
-    // let attemptCounter = document.getElementById('attempt-counter');
-    // addToCounter(attemptCounter);
+    let howManyinPlayAndShowing = 0;
+    for (let cardMatchIndex = 0;cardMatchIndex < cardMatchArray.length;cardMatchIndex++)
+    { 
+        let cardMatch = cardMatchArray[cardMatchIndex];
+        if(cardMatch.Status === "IN_PLAY")
+        {
+            console.log(cardMatch);
+            if(cardMatch.IsFrontShowing1)
+            {
+                howManyinPlayAndShowing++;
+            }
+            if(cardMatch.IsFrontShowing2)
+            {
+                howManyinPlayAndShowing++;
+            }          
+        } 
+    }
+
+    console.log(howManyinPlayAndShowing);
+    
+    if(howManyinPlayAndShowing === 2)
+    {
+        let matchFound = false;
+        for (let cardMatchIndex = 0;cardMatchIndex < cardMatchArray.length;cardMatchIndex++)
+        { 
+            let cardMatch = cardMatchArray[cardMatchIndex];
+            if(cardMatch.Status === "IN_PLAY")
+            {                
+                if(cardMatch.IsFrontShowing1 && cardMatch.IsFrontShowing2)
+                {
+                    cardMatch.Status = "MATCHED";
+                    let matchesCounter = document.getElementById('matches-counter');
+                    addToCounter(matchesCounter);
+                    matchFound = true;
+                }           
+            } 
+        }
+        if(!matchFound)
+        {
+            let missesCounter = document.getElementById('misses-counter');
+            addToCounter(missesCounter);
+        }
+
+        let attemptCounter = document.getElementById('attempt-counter');
+        addToCounter(attemptCounter);
+
+        setTimeout(() => {
+            let items = getGamePlayState();
+            for(let index = 0; index < items.length; index++)
+            {            
+                let node = items[index];
+                let nodeValueAttr = '';
+                if(node.nodeName === "INPUT")
+                {
+                    if(node.getAttribute('value') != undefined)
+                    {
+                        nodeValueAttr = node.getAttribute('value');
+                    }
+                    
+                    if(nodeValueAttr.length > 0)
+                    {                    
+                        if(nodeValueAttr === "IN_PLAY")
+                        {
+                            let card = document.getElementById(node.parentNode.getAttribute("Id"));
+                            ensureCardFaceDown(card);
+                        }
+                    } 
+                }                              
+            }
+        }, 1000); 
+    }
+
+    
+    for (let cardMatchIndex = 0;cardMatchIndex < cardMatchArray.length;cardMatchIndex++)
+    { 
+        let cardMatch = cardMatchArray[cardMatchIndex];
+        if(cardMatch.Status === "MATCHED")
+        {
+            let statefulTag1 = document.getElementById(cardMatch.StatefulTagId1);
+            statefulTag1.value = cardMatch.Status;
+            let statefulTag2 = document.getElementById(cardMatch.StatefulTagId2);
+            statefulTag2.value = cardMatch.Status;
+            console.log(cardMatch);                    
+        } 
+    }  
+}
+
+function ensureCardFaceDown(card)
+{
+    let isFrontShow = card.innerHTML.indexOf(flipCardFrontShowClassName) > 0;
+        
+    if(isFrontShow)
+    {
+        card.innerHTML = card.innerHTML.replace(flipCardFrontShowClassName,flipCardFrontHideClassName);
+        card.innerHTML = card.innerHTML.replace(flipCardBackHideClassName,flipCardBackShowClassName);                      
+    }      
 }
 
 function flipCard(card)
-{ 
-    let frontHide = 'flip-card-front-hide';
-    let frontShow = 'flip-card-front-show';
-    let backHide = 'flip-card-back-hide';
-    let backShow = 'flip-card-back-show';
-
-    let isFrontShow = card.innerHTML.indexOf(frontShow) > 0;
-    let isBackShow = card.innerHTML.indexOf(backShow) > 0;
+{
+    let isFrontShow = card.innerHTML.indexOf(flipCardFrontShowClassName) > 0;
+    let isBackShow = card.innerHTML.indexOf(flipCardBackShowClassName) > 0;
     
     if(isFrontShow)
     {
-        card.innerHTML = card.innerHTML.replace(frontShow,frontHide);
-        card.innerHTML = card.innerHTML.replace(backHide,backShow);                      
+        card.innerHTML = card.innerHTML.replace(flipCardFrontShowClassName,flipCardFrontHideClassName);
+        card.innerHTML = card.innerHTML.replace(flipCardBackHideClassName,flipCardBackShowClassName);                      
     }
     
     if(isBackShow)
     {
-        card.innerHTML = card.innerHTML.replace(frontHide,frontShow); 
-        card.innerHTML = card.innerHTML.replace(backShow,backHide);                       
+        card.innerHTML = card.innerHTML.replace(flipCardFrontHideClassName,flipCardFrontShowClassName); 
+        card.innerHTML = card.innerHTML.replace(flipCardBackShowClassName,flipCardBackHideClassName);                       
     }   
 }
 
@@ -250,9 +388,6 @@ function addToCounter(counter)
 
 function main()
 {
-    let shapeImageTagArray = [];
-    let spanImagesIdArray = [];
-    
     for(let i = 0; i < 2; i++)
     {
         let fileNameExtension = i + 1;
