@@ -32,6 +32,7 @@ let shapeImageTagArray = [];
 let spanImagesIdArray = [];
 let shapesFileNameArray1 = [];
 let shapesFileNameArray2 = [];
+let gameList = null;
 
 function addActionsToCards()
 {
@@ -295,6 +296,18 @@ function clickOnCard(card)
                             let finalScore = Math.round(rawScore);
                             let statusBanner = document.getElementById('status-banner'); 
                             statusBanner.value = `Your Game Score: ${finalScore}`;
+
+                            if(gameList !=undefined && Array.isArray(gameList))
+                            {
+                                gameList.push({id: playerInitialsStored, score:finalScore })
+                            }
+                            else
+                            {
+                                gameList = [{id: playerInitialsStored, score:finalScore }]
+                            }
+
+                            localStorage.setItem("ArazMatchingGameList",JSON.stringify(gameList))
+                            console.log(gameList);
                         }
                     }, 1000); 
                 }           
@@ -484,7 +497,10 @@ function startOver()
 }
 
 function main()
-{
+{    
+    gameList = localStorage.getItem("ArazMatchingGameList");
+    console.log(gameList);
+
     mixUpImages();
 
     for(let i = 0; i < 2; i++)
@@ -554,6 +570,8 @@ function main()
     }
 
     addActionsToCards();
+
+    
 }
 
 main();
