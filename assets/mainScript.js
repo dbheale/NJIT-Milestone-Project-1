@@ -73,6 +73,34 @@ function getTime()
     let time = `${hourText}:${minuteText}:${secondText}`
     return time;
 }
+
+function getCalcDiffSeconds(time1,time2)
+{
+    let diffSeconds = 0;
+    let splitTime1 = time1.split(":");
+    let splitTime2 = time2.split(":");
+
+    let hrs1 = splitTime1[0];
+    let min1 = splitTime1[1];
+    let sec1 = splitTime1[2];
+
+    let hrs2 = splitTime2[0];
+    let min2 = splitTime2[1];
+    let sec2 = splitTime2[2];
+    
+    let hrsDiff = parseInt(hrs2) - parseInt(hrs1);
+    let minDiff = parseInt(min2) - parseInt(min1);
+    let secDiff = parseInt(sec2) - parseInt(sec1);
+
+    console.log(`hrs1:${hrs1}|hrs2:${hrs2}|hrsDiff:${hrsDiff}`);
+    console.log(`min1:${min1}|min2:${min2}|minDiff:${minDiff}`);
+    console.log(`sec1:${sec1}|sec2:${sec2}|secDiff:${secDiff}`);
+    let diffSeconds1 = parseInt(hrsDiff) * 60 * 60;
+    let diffSeconds2 = parseInt(minDiff) * 60;
+    diffSeconds = parseInt(secDiff) + diffSeconds1 + diffSeconds2;
+    return diffSeconds;
+}
+
 function padZero(value)
 {
     if(parseInt(value) > 9)
@@ -232,6 +260,9 @@ function clickOnCard(card)
     
     if(howManyinPlayAndShowing === 2)
     {
+        let attemptCounter = document.getElementById('attempt-counter');
+        addToCounter(attemptCounter);
+
         let matchFound = false;
         for (let cardMatchIndex = 0;cardMatchIndex < cardMatchArray.length;cardMatchIndex++)
         { 
@@ -246,14 +277,23 @@ function clickOnCard(card)
                     matchFound = true;
 
                     setTimeout(() => {
+                        let attemptCounter = document.getElementById('attempt-counter');
+                        let attemptCounterValue = parseInt(attemptCounter.value);
                         let matchesCounter = document.getElementById('matches-counter');                        
-                        let value = parseInt(matchesCounter.value);
-                        if (value >= 15)
+                        let matchesCounterValue = parseInt(matchesCounter.value);
+                        if (matchesCounterValue >= 15)
                         {
                             let startTime = document.getElementById('start-time');
                             let startTimeValue = startTime.value;
                             let endTimeValue  = getTime();
-                            alert(`${startTimeValue} - ${endTimeValue}`)
+                            let diffSeconds = getCalcDiffSeconds(startTimeValue,endTimeValue)
+                            console.log(`${diffSeconds} - diffSeconds`);
+
+                            /* The score will be (matches over seconds) times (attempts over seconds) */
+                            let scoreRatio = (matchesCounterValue / diffSeconds) * (attemptCounterValue / diffSeconds)
+                            let rawScore = scoreRatio * 1000;
+                            let finalScore = Math.round(rawScore);
+                            alert(`Score: ${finalScore}`);
                         }
                     }, 1000); 
                 }           
@@ -263,10 +303,7 @@ function clickOnCard(card)
         {
             let missesCounter = document.getElementById('misses-counter');
             addToCounter(missesCounter);
-        }
-
-        let attemptCounter = document.getElementById('attempt-counter');
-        addToCounter(attemptCounter);
+        }        
 
         setTimeout(() => {
             let items = getGamePlayState();
