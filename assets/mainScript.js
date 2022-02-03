@@ -37,12 +37,12 @@ function addActionsToCards()
 {
     let startButton = document.getElementById('start-button');
     startButton.addEventListener('click',function(){   
-        let statusBanner = document.getElementById('status=banner'); 
+        let statusBanner = document.getElementById('status-banner'); 
         statusBanner.value = "";  
         let playerInitials = document.getElementById('player-initials');
         if (playerInitials.value == undefined || playerInitials.value.length < 1)
         {
-            let statusBanner = document.getElementById('status=banner'); 
+            let statusBanner = document.getElementById('status-banner'); 
             statusBanner.value = "Please enter your initials...";        
             return;
         }
@@ -293,7 +293,8 @@ function clickOnCard(card)
                             let scoreRatio = (matchesCounterValue / diffSeconds) * (attemptCounterValue / diffSeconds)
                             let rawScore = scoreRatio * 1000;
                             let finalScore = Math.round(rawScore);
-                            alert(`Score: ${finalScore}`);
+                            let statusBanner = document.getElementById('status-banner'); 
+                            statusBanner.value = `Your Game Score: ${finalScore}`;
                         }
                     }, 1000); 
                 }           
@@ -469,6 +470,17 @@ function mixUpImages()
             }           
         }
     }
+}
+
+function quitGame()
+{
+    window.opener = self;
+    window.close();
+}
+
+function startOver()
+{
+    location.reload(true);
 }
 
 function main()
