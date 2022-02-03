@@ -7,6 +7,9 @@ const flipCardFrontHideClassName = 'flip-card-front-hide';
 const flipCardFrontShowClassName = 'flip-card-front-show';
 const flipCardBackHideClassName = 'flip-card-back-hide';
 const flipCardBackShowClassName = 'flip-card-back-show';
+const pendingStatus = 'PENDING';
+const matchedStatus = 'MATCHED';
+const inPlayStatus = 'IN_PLAY';
 const shapesFileNameArray = [
     'BasicTrangle.png'
     ,'Bolt.png'
@@ -27,7 +30,8 @@ const shapesFileNameArray = [
 let playerInitialsStored = '***';
 let shapeImageTagArray = [];
 let spanImagesIdArray = [];
-
+let shapesFileNameArray1 = [];
+let shapesFileNameArray2 = [];
 
 function addActionsToCards()
 {
@@ -98,7 +102,7 @@ function clickOnCard(card)
     {        
         cardMatchArray.push({
             Name: shapesFileNameArray[imageIndex].replace('.png','')
-            ,Status: "PENDING"
+            ,Status: pendingStatus
             ,StatefulTagId1: "TBD"
             ,StatefulTagId2: "TBD"            
             ,IsFrontShowing1: false            
@@ -210,7 +214,7 @@ function clickOnCard(card)
     for (let cardMatchIndex = 0;cardMatchIndex < cardMatchArray.length;cardMatchIndex++)
     { 
         let cardMatch = cardMatchArray[cardMatchIndex];
-        if(cardMatch.Status === "IN_PLAY")
+        if(cardMatch.Status === inPlayStatus)
         {
             console.log(cardMatch);
             if(cardMatch.IsFrontShowing1)
@@ -232,14 +236,26 @@ function clickOnCard(card)
         for (let cardMatchIndex = 0;cardMatchIndex < cardMatchArray.length;cardMatchIndex++)
         { 
             let cardMatch = cardMatchArray[cardMatchIndex];
-            if(cardMatch.Status === "IN_PLAY")
+            if(cardMatch.Status === inPlayStatus)
             {                
                 if(cardMatch.IsFrontShowing1 && cardMatch.IsFrontShowing2)
                 {
-                    cardMatch.Status = "MATCHED";
+                    cardMatch.Status = matchedStatus;
                     let matchesCounter = document.getElementById('matches-counter');
                     addToCounter(matchesCounter);
                     matchFound = true;
+
+                    setTimeout(() => {
+                        let matchesCounter = document.getElementById('matches-counter');                        
+                        let value = parseInt(matchesCounter.value);
+                        if (value >= 15)
+                        {
+                            let startTime = document.getElementById('start-time');
+                            let startTimeValue = startTime.value;
+                            let endTimeValue  = getTime();
+                            alert(`${startTimeValue} - ${endTimeValue}`)
+                        }
+                    }, 1000); 
                 }           
             } 
         }
@@ -267,7 +283,7 @@ function clickOnCard(card)
                     
                     if(nodeValueAttr.length > 0)
                     {                    
-                        if(nodeValueAttr === "IN_PLAY")
+                        if(nodeValueAttr === inPlayStatus)
                         {
                             let card = document.getElementById(node.parentNode.getAttribute("Id"));
                             ensureCardFaceDown(card);
@@ -282,7 +298,7 @@ function clickOnCard(card)
     for (let cardMatchIndex = 0;cardMatchIndex < cardMatchArray.length;cardMatchIndex++)
     { 
         let cardMatch = cardMatchArray[cardMatchIndex];
-        if(cardMatch.Status === "MATCHED")
+        if(cardMatch.Status === matchedStatus)
         {
             let statefulTag1 = document.getElementById(cardMatch.StatefulTagId1);
             statefulTag1.value = cardMatch.Status;
@@ -308,14 +324,15 @@ function flipCard(card)
 {
     let isFrontShow = card.innerHTML.indexOf(flipCardFrontShowClassName) > 0;
     let isBackShow = card.innerHTML.indexOf(flipCardBackShowClassName) > 0;
+    let isInPlay = card.innerHTML.indexOf(inPlayStatus) > 0;
     
-    if(isFrontShow)
+    if(isFrontShow && isInPlay)
     {
         card.innerHTML = card.innerHTML.replace(flipCardFrontShowClassName,flipCardFrontHideClassName);
         card.innerHTML = card.innerHTML.replace(flipCardBackHideClassName,flipCardBackShowClassName);                      
     }
     
-    if(isBackShow)
+    if(isBackShow && isInPlay)
     {
         card.innerHTML = card.innerHTML.replace(flipCardFrontHideClassName,flipCardFrontShowClassName); 
         card.innerHTML = card.innerHTML.replace(flipCardBackShowClassName,flipCardBackHideClassName);                       
@@ -386,24 +403,67 @@ function addToCounter(counter)
     counter.value = value + 1;
 }
 
-function main()
+
+function mixUpImages()
 {
     for(let i = 0; i < 2; i++)
     {
+        let numbers = []; 
+        for (let imageIndex = 0; imageIndex < shapesFileNameArray.length; imageIndex++)
+        {
+            numbers.push([Math.random(),imageIndex]);
+        }
+        let numbersSort = numbers.sort();
+        for (let imageIndex = 0; imageIndex < shapesFileNameArray.length; imageIndex++)
+        {
+            let randomNumber = numbersSort[imageIndex][0];
+            let imageNumber = numbersSort[imageIndex][1];
+            
+            // console.log(`numbersSort[${imageIndex}][0]: ${randomNumber}`);
+            // console.log(`numbersSort[${imageIndex}][1]: ${imageNumber}`);
+
+            if(i === 0)
+            {
+                shapesFileNameArray1.push(shapesFileNameArray[imageNumber])
+            }
+            else
+            {
+                shapesFileNameArray2.push(shapesFileNameArray[imageNumber])
+            }           
+        }
+    }
+}
+
+function main()
+{
+    mixUpImages();
+
+    for(let i = 0; i < 2; i++)
+    {
         let fileNameExtension = i + 1;
-        for (let imageIndex = 0;imageIndex < shapesFileNameArray.length;imageIndex++)
+        let array = [];
+        if(i === 0)
+        {
+            array = shapesFileNameArray1;
+        }
+        else
+        {
+            array = shapesFileNameArray2;
+        } 
+
+        for (let imageIndex = 0;imageIndex < array.length;imageIndex++)
         {
             // console.log(`Shapes File Name: ${shapesFileNameArray[imageIndex]}`);
     
             // Card Front Image Tag
-            let cardFrontImageName = `${shapesFileNameArray[imageIndex].replace(".png","")}`;
+            let cardFrontImageName = `${array[imageIndex].replace(".png","")}`;
             let cardFrontImageId = `${cardFrontImageName}-${fileNameExtension}`;
-            let cardFrontImageFilePath = `${shapeImageRootFilePath}${shapesFileNameArray[imageIndex]}`;
+            let cardFrontImageFilePath = `${shapeImageRootFilePath}${array[imageIndex]}`;
             let cardFrontImageTag = `<img id="${cardFrontImageId}" src="${cardFrontImageFilePath}" alt="${cardFrontImageName}" class="flip-card-front-hide"/>`
             // console.log(`Card Front Image Name: ${cardFrontImageName}`);
             
             // Card Back Image Tag
-            let cardBackImageName = `${shapesFileNameArray[imageIndex].replace(".png","-CardBack")}`;
+            let cardBackImageName = `${array[imageIndex].replace(".png","-CardBack")}`;
             let cardBackImageId = `${cardBackImageName}-${fileNameExtension}`;
             let cardBackImageFilePath = `${shapeImageRootFilePath}CardBack.png`;
             let cardBackImageTag = `<img id="${cardBackImageId}" src="${cardBackImageFilePath}" alt="${cardBackImageName}" class="flip-card-back-show"/>`;
@@ -411,7 +471,7 @@ function main()
     
             //Input Hidden Tag        
             let cardinputHiddenId = `${cardFrontImageName}-Input-${fileNameExtension}`;
-            let cardinputHiddenTag = `<input id="${cardinputHiddenId}" type="hidden" value="IN_PLAY"/>`
+            let cardinputHiddenTag = `<input id="${cardinputHiddenId}" type="hidden" value="${inPlayStatus}"/>`
     
             // Card Span Tag
             let cardSpanId = `${cardFrontImageName}-Span-${fileNameExtension}`;
