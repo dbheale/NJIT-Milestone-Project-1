@@ -1,43 +1,20 @@
-/* * { 
-    border: 1px solid teal;
-} */
- .game-board-cell {
-    height: 5em;
-    width: 5em;
-    padding: 1em;
+.container{
+    display: flex;
+}
+ .game-board-main {
+    display: flex;
 }
 
 /* SHOW <--> HIDE TOGGLES */
-.game-board-hide {
-    display: none;
+.playing-card {
+    margin: 15px;
+    cursor: pointer;
 }
-.game-board-show {
-    display: inline;
+
+.playing-card.active{
+    cursor: not-allowed;
 }
-.start-button-hide {
-    display: none;
-}
-.start-button-show {
-    display: inline;
-}
-.start-time-hide {
-    display: none;
-}
-.start-time-show {
-    display: inline;
-}
-.flip-card-front-hide {
-    display: none;
-}
-.flip-card-front-show {
-    display: inline;
-}
-.flip-card-back-hide {
-    display: none;
-}
-.flip-card-back-show {
-    display: inline;    
-}
+
 body{
     background-color: lightgrey;
 }
@@ -47,9 +24,9 @@ img {
     height: auto;
 }
 
-aside {    
+aside {
     display:flex;
-    align-items: left;
+    align-self: start;
     justify-content: left;
     float:left;
     min-width: 20%;
@@ -60,5 +37,4 @@ aside {
     padding: 1em;
 }
 
-  
-  
+
