@@ -58,7 +58,9 @@ function cardClicked(tileElement, tileIndex) {
         return;
     }
     if(!card2){
-        document.getElementById('attempt-counter').value++;
+        const attemptCounter = document.getElementById('attempt-counter');
+
+        attemptCounter.value++;
 
         card2 = {tileIndex, tileElement};
         tileElement.src = shapeImageRootFilePath + shapeImages[tileIndex];
@@ -70,7 +72,7 @@ function cardClicked(tileElement, tileIndex) {
                 validImageState[card2.tileIndex] = true;
                 document.getElementById('matches-counter').value++;
                 if(validImageState.every(item => item === true)){
-                    document.getElementById('status-banner').value = `You win! It only took you ${document.getElementById('attempt-counter').value} tries.`
+                    document.getElementById('status-banner').value = `You win! It only took you ${attemptCounter.value} tries.`
                 }
             }else{
                 card1.tileElement.src = defaultImage;
