@@ -127,6 +127,9 @@ function main(initialLoad = false)
 {
     if (document.getElementById('player-initials').value.length > 0) {
         validImageState.fill(false);
+        document.getElementById('attempt-counter').value = 0;
+        document.getElementById('matches-counter').value = 0;
+        document.getElementById('misses-counter').value = 0;
         document.getElementById('start-time').value = getTime();
         addCards();
         return;
